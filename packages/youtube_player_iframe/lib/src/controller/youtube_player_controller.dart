@@ -41,25 +41,27 @@ class YoutubePlayerController implements YoutubePlayerIFrameAPI {
       webViewParams = const PlatformWebViewControllerCreationParams();
     }
 
-    final navigationDelegate = NavigationDelegate(
-      onWebResourceError: (error) {
-        log(error.description, name: error.errorType.toString());
-        onWebResourceError?.call(error);
-      },
-      onNavigationRequest: (request) {
-        final uri = Uri.tryParse(request.url);
-        return _decideNavigation(uri);
-      },
-    );
-
     webViewController = WebViewController.fromPlatformCreationParams(
       webViewParams,
     )
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(navigationDelegate)
       ..setUserAgent(params.userAgent)
       ..addJavaScriptChannel(playerId, onMessageReceived: _eventHandler.call)
       ..enableZoom(false);
+
+    if (defaultTargetPlatform != TargetPlatform.macOS) {
+      final navigationDelegate = NavigationDelegate(
+        onWebResourceError: (error) {
+          log(error.description, name: error.errorType.toString());
+          onWebResourceError?.call(error);
+        },
+        onNavigationRequest: (request) {
+          final uri = Uri.tryParse(request.url);
+          return _decideNavigation(uri);
+        },
+      );
+      webViewController.setNavigationDelegate(navigationDelegate);
+    }
 
     final webViewPlatform = webViewController.platform;
     if (webViewPlatform is AndroidWebViewController) {
