@@ -94,8 +94,21 @@ class YoutubePlayerParams {
 
   /// This parameter provides an extra security measure for the IFrame API and is only supported for IFrame embeds.
   ///
-  /// Specify your domain as the value.
+  /// If you are loading a player in your web application, you should specify your website's URL.
+  /// For example, if your site is at https://example.com, set origin to 'https://example.com'.
+  ///
+  /// For mobile/desktop applications, this can be left as null or set to a custom scheme like 'app://com.yourapp'.
+  ///
+  /// Default is null.
   final String? origin;
+
+  /// When enabled, the player will use youtube-nocookie.com instead of youtube.com.
+  ///
+  /// This provides enhanced privacy by preventing YouTube from tracking users unless they play a video.
+  /// Useful for GDPR compliance.
+  ///
+  /// Default is false.
+  final bool usePrivacyEnhancedMode;
 
   /// This parameter controls whether videos play inline or fullscreen in an HTML5 player on iOS.
   ///
@@ -124,11 +137,18 @@ class YoutubePlayerParams {
     this.interfaceLanguage = 'en',
     this.showVideoAnnotations = true,
     this.loop = false,
-    this.origin = 'https://www.youtube.com',
+    this.origin,
+    this.usePrivacyEnhancedMode = false,
     this.playsInline = true,
     this.strictRelatedVideos = false,
     this.userAgent,
   });
+
+  /// Returns the YouTube host URL based on the privacy mode setting.
+  @internal
+  String get youtubeHost => usePrivacyEnhancedMode
+      ? 'https://www.youtube-nocookie.com'
+      : 'https://www.youtube.com';
 
   /// Creates [Map] representation of [YoutubePlayerParams].
   Map<String, dynamic> toMap() {

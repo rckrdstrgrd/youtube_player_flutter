@@ -252,7 +252,7 @@ class YoutubePlayerController implements YoutubePlayerIFrameAPI {
   Future<void> init() async {
     await load(
       params: params,
-      baseUrl: kIsWeb ? Uri.base.origin : params.origin,
+      baseUrl: kIsWeb ? Uri.base.origin : null,
       id: playerId,
     );
 
@@ -273,7 +273,7 @@ class YoutubePlayerController implements YoutubePlayerIFrameAPI {
       'pointerEvents': params.pointerEvents.name,
       'playerVars': params.toJson(),
       'platform': platform,
-      'host': params.origin ?? 'https://www.youtube.com',
+      'host': params.youtubeHost,
     };
 
     await webViewController.loadHtmlString(
